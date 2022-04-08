@@ -3,6 +3,7 @@ import csv
 import os 
 import pickle
 import sys 
+import argparse
 
 import numpy as np 
 import torch
@@ -246,8 +247,18 @@ class RankingEvaluator():
 
 
 if __name__ == "__main__":
-    import sys 
     sys.path += ["../"]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ranking_path", default="/mnt/nfs/scratch1/hzeng/my-msmarco-passage/experiments/multistep-curriculum/experiment_01-29_230126/runs/checkpoint_120000.dev.run", type=str)
+    parser.add_argument("--qrels_path", default="/mnt/nfs/scratch1/hzeng/datasets/msmarco-passage/qrels.dev.small.tsv", type=str)
+    args = parser.parse_args()
+
+    evaluator = RankingEvaluator(args.qrels_path, is_trec=False, show_progress_bar=True)
+    local_dict = evaluator.compute_metrics(args.ranking_path, return_per_query=False)
+    print("# msmarco-dev: ")
+    print(local_dict)
+
+    """
     ranking_dir = "/mnt/nfs/scratch1/hzeng/my-msmarco-passage/experiments/"
     path_template = "multistep-curriculum/experiment_01-29_230126/runs/checkpoint_120000"
 
@@ -281,3 +292,4 @@ if __name__ == "__main__":
     #evaluator = RankingEvaluator(qrels_path, is_trec=True, show_progress_bar=True)
     #local_dict = evaluator.compute_metrics(ranking_path, return_per_query=False)
     #print(local_dict)
+    """
